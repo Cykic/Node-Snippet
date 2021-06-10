@@ -9,6 +9,7 @@
   "author": "Cykic",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "nodemailer": "^6.6.1"
   }
 }

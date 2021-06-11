@@ -11,8 +11,8 @@ const server = http.createServer((req, res) => {
   //   console.log("Hello");
   // })
 
-  greet();
-  greet();
+  // greet();
+  // greet();
   let path = "./views/";
   switch (req.url) {
     case "/":
@@ -44,5 +44,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen("3002", "localhost", () => {
-  console.log("Listening for request on port 3000");
+  console.log("Listening for request on port 3002");
 });

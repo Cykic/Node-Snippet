@@ -17,8 +17,6 @@ exports.signup = async (req, res) => {
 
     const token = await signToken(newUser);
 
-    console.log(token);
-
     res.status(201).json({
       status: 'success',
       token,
@@ -61,50 +59,65 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.editProfile = (req, res) => {
+exports.editProfile = async (req, res) => {
+  // Cannot update password paswword
+  if (req.body.password || req.body.passwordConfirm) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'Cannot update password from this route',
+    });
+  }
   // If header contains token
   if (!req.header('authorization'))
     return res.status(401).json({ message: 'Not authorized missing token' });
 
   // 1. token
-  const bearerToken = req.headers('authorization');
-  const token = bearerToken.split(' ')[1];
-  // 2. Update User document
-  res.status(200).json({
-    status: 'success',
-    token,
+  const token = req.header('authorization').split(' ')[1];
+
+  // 2. Verify signToken
+
+  jwt.verify(token, details.JWT_SECRET, async (err, decodedToken) => {
+    if (err) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Invalid token',
+      });
+    } else {
+      const id = decodedToken.id;
+      // filter body object
+      const filteredBody = {
+        name: req.body.name,
+        email: req.body.email,
+        phoneNumber: req.body.phoneNumber,
+      };
+
+      // Find user by Id and update
+      try {
+        const user = await User.findByIdAndUpdate(id, filteredBody, {
+          new: true,
+          runValidators: false,
+        }).select('+password');
+
+        res.status(200).json({
+          status: 'success',
+          token,
+          user,
+        }); // Add to req object
+      } catch (error) {
+        res.status(400).json({
+          status: 'error',
+          message: error.message,
+          request: req.body,
+          filter: filteredBody,
+        });
+        console.log(error.message);
+      }
+    }
   });
 };
 
 exports.updatePassword = async (req, res) => {
-  try {
-    jwt.verify(token, details.JWT_SECRET, function (err, decodedToken) {
-      if (err) {
-        return res.status(401).json({
-          status: 'fail',
-          message: 'Invalid token',
-        });
-      } else {
-        req.userId = decodedToken.id;
-        console.log(req.userId); // Add to req object
-        next();
-      }
-    });
-  } catch (err) {
-    console.log(err.message);
-  }
   // 1. Get user from collection
-  const filteredBody = {
-    name: req.body.name,
-    email: req.body.email,
-    phoneNumber: req.body.phoneNumber,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-  };
-  const user = await User.findByIdAndUpdate(req.userId, filteredBody, {
-    new: true,
-    runValidators: true,
-  });
 
   // 2. Confirm Password
   res.status(200).json({

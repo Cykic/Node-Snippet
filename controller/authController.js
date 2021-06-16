@@ -135,5 +135,3 @@ const signToken = async (newUser) =>
   jwt.sign({ id: newUser._id }, details.JWT_SECRET, {
     expiresIn: details.JWT_EXPIRATION,
   });
-
-const filterObj = (obj, ...fields) => {};

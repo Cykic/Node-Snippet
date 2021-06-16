@@ -28,6 +28,7 @@ class MongoDB {
       console.log("Connected to MongoDB Successfully");
     } catch (err) {
       console.log("Failed to Connect to MongoDB");
+      console.log("reason:", err.message);
     }
   }
 

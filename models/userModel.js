@@ -3,10 +3,10 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true,unique: true},
+  name: { type: String, required: true },
   email: {
     type: String,
-    unique: [true,"Email already exists"],
+    unique: [true, "Email already exists"],
     required: true,
     lowercase: true,
     validate: [validator.isEmail, "Please provide valid email"],
@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 5,
+    select: false, //prevents showing the password in any output
   },
   passwordConfirm: {
     type: String,

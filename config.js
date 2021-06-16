@@ -1,7 +1,9 @@
-const details={
-    username :`Cykic`,
-    password :`Fortunatus`,
-    database : `Node-Snippets`
-}
+const details = {
+  username: `Cykic`,
+  password: `Fortunatus`,
+  database: `Node-Snippets`,
+  JWT_SECRET: "you-have-to-be-pretty-smart-to-get-my-secret-key",
+  JWT_EXPIRATION: "1d",
+};
 
-module.exports = details
+module.exports = details;

@@ -1,21 +1,37 @@
-var myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
+// const jsonFile = require('./contct.json');
+const fs = require('fs');
+const csv=require('csvtojson')
 
-var raw = JSON.stringify({
-  "name": "Fortune Sam-Olayemi",
-  "email": "bolzysam@gmail.com",
-  "password": "test1234",
-  "passwordConfirm": "test1234"
-});
+async function init() {
+  const jsonFile = await csv().fromFile('./cct.csv');
+  
+  gloHeaders = ['0705', '0805', '0807', '0811', '0815', '0905'];
 
-var requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-};
+  const gloNumbers = [];
 
-fetch("http://127.0.0.1:3000/signup", requestOptions)
-  .then(response => response.text())
-  .then(result => console.log(result))
-  .catch(error => console.log('error', error));
+  // Condition for Glo Number
+  const gloCondition = (numHeader) =>
+    gloHeaders.some((num) => num === numHeader);
+
+  // Convert all to String
+  const stringPhone = jsonFile.map((contact) => {
+    contact.Phone = String(contact.Phone);
+    return contact;
+  });
+
+  stringPhone.forEach((contact) => {
+    // 1.) if number starts with +234
+    if (contact.Phone.slice(0, 4) === '+234') {
+      const numHeader = `0${contact.Phone.slice(5, 8)}`;
+      gloCondition(numHeader) ? gloNumbers.push(contact) : '';
+    }
+    // else
+    gloCondition(contact.Phone.slice(0, 4)) ? gloNumbers.push(contact) : '';
+  });
+
+  const son = JSON.stringify(gloNumbers);
+  fs.writeFileSync('./Glo numbers.json', son, 'utf-8');
+  console.log(gloNumbers);
+}
+
+init();
